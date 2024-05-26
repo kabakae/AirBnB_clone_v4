@@ -1,17 +1,21 @@
 #!/usr/bin/python3
-"""
-initialize the models package
-"""
 
-from os import getenv
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 
+user = os.getenv('HBNB_MYSQL_USER')
+password = os.getenv('HBNB_MYSQL_PWD')
+host = os.getenv('HBNB_MYSQL_HOST')
+database = os.getenv('HBNB_MYSQL_DB')
 
-storage_t = getenv("HBNB_TYPE_STORAGE")
+engine = create_engine(f'mysql+mysqldb://{user}:{password}@{host}/{database}')
+Session = scoped_session(sessionmaker(bind=engine))
 
-if storage_t == "db":
-    from models.engine.db_storage import DBStorage
-    storage = DBStorage()
-else:
-    from models.engine.file_storage import FileStorage
-    storage = FileStorage()
-storage.reload()
+def storage():
+    """Returns a scoped session"""
+    return Session()
+
+def close():
+    """Closes the session"""
+    Session.remove()
