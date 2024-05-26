@@ -16,6 +16,7 @@ from models.state import State
 from models.user import User
 import json
 import os
+from models import storage
 import pep8
 import unittest
 FileStorage = file_storage.FileStorage
@@ -79,7 +80,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertIs(new_dict, storage._FileStorage__objects)
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_new(self):
+    def test_storage(self):
         """test that new adds an object to the FileStorage.__objects attr"""
         storage = FileStorage()
         save = FileStorage._FileStorage__objects

@@ -6,7 +6,8 @@ Contains the TestDBStorageDocs and TestDBStorage classes
 from datetime import datetime
 import inspect
 import models
-from models.engine import db_storage
+from models.engine import db_storage, file_storage
+from models.engine import file_storage
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -70,22 +71,46 @@ test_db_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_all_returns_dict(self):
-        """Test that all returns a dictionaty"""
-        self.assertIs(type(models.storage.all()), dict)
+    
+    @classmethod
+    def setUpClass(cls):
+        """Set up test environment"""
+        cls.storage = FileStorage()
+        cls.state = State(name="California")
+        cls.storage.new(cls.state)
+        cls.storage.save()
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_all_returns_dict(self):
+        """Test that all returns a dictionary"""
+        self.assertIs(type(self.storage.all()), dict)
+
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
-
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+        all_objects = self.storage.all()
+        self.assertIn(self.state, all_objects.values())
     def test_new(self):
-        """test that new adds an object to the database"""
+        """Test that new adds an object to the database"""
+        self.assertIn(self.state, self.storage.all().values())
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+        self.storage.save()
+        with open(self.storage._FileStorage__file_path, 'r') as f:
+            data = json.load(f)
+            self.assertIn(self.state.id, data)
 
-    print("All objects: {}".format(storage.count()))
-print("State objects: {}".format(storage.count(State)))
+    def test_get_method(self):
+        """Test get method"""
+        first_state_id = self.state.id
+        retrieved_state = self.storage.get(State, first_state_id)
+        self.assertIsNotNone(retrieved_state)
+        self.assertEqual(retrieved_state.id, first_state_id)
+    def test_count_method(self):
+        """Test count method"""
+        total_count = self.storage.count()
+        state_count = self.storage.count(State)
+        self.assertEqual(total_count, 1)
+        self.assertEqual(state_count, 1)
+
+if __name__ == "__main__":
+    unittest.main()
