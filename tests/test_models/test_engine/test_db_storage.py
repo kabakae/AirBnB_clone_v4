@@ -6,8 +6,8 @@ Contains the TestDBStorageDocs and TestDBStorage classes
 from datetime import datetime
 import inspect
 import models
-from models.engine import db_storage, file_storage
-from models.engine import file_storage
+from models.engine.db_storage import DBStorage
+from models.engine.file_storage import FileStorage
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -19,7 +19,7 @@ import json
 import os
 import pep8
 import unittest
-DBStorage = db_storage.DBStorage
+
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
 
@@ -39,18 +39,17 @@ class TestDBStorageDocs(unittest.TestCase):
                          "Found code style errors (and warnings).")
 
     def test_pep8_conformance_test_db_storage(self):
-        """Test tests/test_models/test_db_storage.py conforms to PEP8."""
+        """Test tests/test_models/test_engine/test_db_storage.py conforms to PEP8."""
         pep8s = pep8.StyleGuide(quiet=True)
-        result = pep8s.check_files(['tests/test_models/test_engine/\
-test_db_storage.py'])
+        result = pep8s.check_files(['tests/test_models/test_engine/test_db_storage.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
     def test_db_storage_module_docstring(self):
         """Test for the db_storage.py module docstring"""
-        self.assertIsNot(db_storage.__doc__, None,
+        self.assertIsNot(models.engine.db_storage.__doc__, None,
                          "db_storage.py needs a docstring")
-        self.assertTrue(len(db_storage.__doc__) >= 1,
+        self.assertTrue(len(models.engine.db_storage.__doc__) >= 1,
                         "db_storage.py needs a docstring")
 
     def test_db_storage_class_docstring(self):
@@ -71,7 +70,7 @@ test_db_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
-    
+
     @classmethod
     def setUpClass(cls):
         """Set up test environment"""
@@ -88,6 +87,7 @@ class TestFileStorage(unittest.TestCase):
         """Test that all returns all rows when no class is passed"""
         all_objects = self.storage.all()
         self.assertIn(self.state, all_objects.values())
+
     def test_new(self):
         """Test that new adds an object to the database"""
         self.assertIn(self.state, self.storage.all().values())
@@ -105,6 +105,7 @@ class TestFileStorage(unittest.TestCase):
         retrieved_state = self.storage.get(State, first_state_id)
         self.assertIsNotNone(retrieved_state)
         self.assertEqual(retrieved_state.id, first_state_id)
+
     def test_count_method(self):
         """Test count method"""
         total_count = self.storage.count()

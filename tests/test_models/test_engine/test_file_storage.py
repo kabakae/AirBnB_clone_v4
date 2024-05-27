@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Contains the TestFileStorageDocs classes
+Contains the TestFileStorageDocs and TestFileStorage classes
 """
 
 from datetime import datetime
@@ -16,9 +16,9 @@ from models.state import State
 from models.user import User
 import json
 import os
-from models import storage
 import pep8
 import unittest
+
 FileStorage = file_storage.FileStorage
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -39,10 +39,9 @@ class TestFileStorageDocs(unittest.TestCase):
                          "Found code style errors (and warnings).")
 
     def test_pep8_conformance_test_file_storage(self):
-        """Test tests/test_models/test_file_storage.py conforms to PEP8."""
+        """Test tests/test_models/test_engine/test_file_storage.py conforms to PEP8."""
         pep8s = pep8.StyleGuide(quiet=True)
-        result = pep8s.check_files(['tests/test_models/test_engine/\
-test_file_storage.py'])
+        result = pep8s.check_files(['tests/test_models/test_engine/test_file_storage.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
@@ -115,5 +114,16 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get(self):
+        """Test the get method"""
+        storage = FileStorage()
+        new_state = State(name="California")
+        storage.new(new_state)
+        storage.save()
         first_state_id = list(storage.all(State).values())[0].id
-print("First state: {}".format(storage.get(State, first_state_id)))
+        retrieved_state = storage.get(State, first_state_id)
+        self.assertEqual(retrieved_state, new_state)
+
+if __name__ == "__main__":
+    unittest.main()
