@@ -39,9 +39,10 @@ class TestDBStorageDocs(unittest.TestCase):
                          "Found code style errors (and warnings).")
 
     def test_pep8_conformance_test_db_storage(self):
-        """Test tests/test_models/test_engine/test_db_storage.py conforms to PEP8."""
+        """Test tests/test_models/test_engine/ conforms to PEP8."""
         pep8s = pep8.StyleGuide(quiet=True)
-        result = pep8s.check_files(['tests/test_models/test_engine/test_db_storage.py'])
+        result = pep8s.check_files([
+            'tests/test_models/test_engine/test_db_storage.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
@@ -112,6 +113,7 @@ class TestFileStorage(unittest.TestCase):
         state_count = self.storage.count(State)
         self.assertEqual(total_count, 1)
         self.assertEqual(state_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
