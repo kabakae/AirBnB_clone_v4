@@ -81,19 +81,17 @@ class TestBaseModel(unittest.TestCase):
     @mock.patch('models.base_model.datetime', wraps=datetime)
     def test_datetime_attributes(self, mock_datetime):
         """Test that two BaseModel instances have different datetime objects
-        and that upon creation have identical updated_at and created_at values."""
-
+        and that upon creation have updated_at and created_at values."""
+        
         now = datetime.now()
         mock_datetime.now.return_value = now
 
-        # Test for inst1
         inst1 = BaseModel()
         self.assertEqual(inst1.created_at, inst1.updated_at)
         self.assertAlmostEqual(
             inst1.created_at, now, delta=timedelta(milliseconds=1)
         )
 
-        # Test for inst2 with a slight delay
         later = now + timedelta(seconds=1)
         mock_datetime.now.return_value = later
         inst2 = BaseModel()
@@ -102,7 +100,6 @@ class TestBaseModel(unittest.TestCase):
             inst2.created_at, later, delta=timedelta(milliseconds=1)
         )
 
-        # Test that inst1 and inst2 have different created_at and updated_at
         self.assertNotEqual(inst1.created_at, inst2.created_at)
         self.assertNotEqual(inst1.updated_at, inst2.updated_at)
 

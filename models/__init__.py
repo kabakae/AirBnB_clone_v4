@@ -17,7 +17,8 @@ if storage_t == "db":
     host = os.getenv('HBNB_MYSQL_HOST')
     database = os.getenv('HBNB_MYSQL_DB')
 
-    engine = create_engine(f'mysql+mysqldb://{user}:{password}@{host}/{database}')
+    engine = create_engine(
+            f'mysql+mysqldb://{user}:{password}@{host}/{database}')
     Session = scoped_session(sessionmaker(bind=engine))
 
     def storage():
