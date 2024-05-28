@@ -16,6 +16,7 @@ from models.user import User
 classes = {"Amenity": Amenity, "BaseModel": Base, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
+
 class DBStorage:
     """Interacts with the MySQL database"""
 
@@ -24,7 +25,8 @@ class DBStorage:
 
     def __init__(self):
         """Instantiate a DBStorage object"""
-        self.__engine = create_engine('mysql+mysqldb://<user>:<password>@<host>/<database>')
+        self.__engine = create_engine(
+            'mysql+mysqldb: // <user>:<password>@<host>/<database>')
 
     def all(self, cls=None):
         """Query on the current database session"""
@@ -52,11 +54,11 @@ class DBStorage:
     def reload(self):
         """Reload data from the database"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
 
     def close(self):
         """Remove the session"""
         self.__session.remove()
-
