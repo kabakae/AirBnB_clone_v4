@@ -18,18 +18,35 @@ classes = {"Amenity": Amenity, "BaseModel": Base, "City": City,
 
 
 class DBStorage:
-    """Interacts with the MySQL database"""
+    """
+    Interacts with the MySQL database.
+
+    Attributes:
+        __engine (sqlalchemy.engine.Engine): The SQLAlchemy engine.
+        __session (sqlalchemy.orm.scoped_session): The SQLAlchemy session.
+    """
 
     __engine = None
     __session = None
 
     def __init__(self):
-        """Instantiate a DBStorage object"""
+        """
+        Instantiate a DBStorage object and create the engine.
+        """
         self.__engine = create_engine(
-            'mysql+mysqldb: // <user>:<password>@<host>/<database>')
+            'mysql+mysqldb://<user>:<password>@<host>/<database>'
+        )
 
     def all(self, cls=None):
-        """Query on the current database session"""
+        """
+        Query on the current database session and return objects.
+
+        Args:
+            cls (type, optional): The class of the objects to query. Defaults to None.
+
+        Returns:
+            dict: A dictionary of queried objects with keys in the format <class name>.<id>.
+        """
         if cls:
             objects = self.__session.query(cls).all()
         else:
@@ -39,26 +56,56 @@ class DBStorage:
         return {f"{obj.__class__.__name__}.{obj.id}": obj for obj in objects}
 
     def new(self, obj):
-        """Add the object to the current database session"""
+        """
+        Add the object to the current database session.
+
+        Args:
+            obj (BaseModel): The object to add.
+        """
         self.__session.add(obj)
 
     def save(self):
-        """Commit all changes of the current database session"""
+        """
+        Commit all changes of the current database session.
+        """
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete from the current database session"""
+        """
+        Delete from the current database session.
+
+        Args:
+            obj (BaseModel, optional): The object to delete. Defaults to None.
+        """
         if obj:
             self.__session.delete(obj)
 
     def reload(self):
-        """Reload data from the database"""
+        """
+        Reload data from the database and create a new session.
+        """
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine,
-                                       expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
 
     def close(self):
-        """Remove the session"""
+        """
+        Remove the current session.
+        """
         self.__session.remove()
+
+    def get(self, cls, id):
+        """
+        Retrieve one object based on class and its ID.
+
+        Args:
+            cls (type): The class of the object.
+            id (str): The ID of the object.
+
+        Returns:
+            BaseModel: The object with the specified class and ID, or None if not found.
+        """
+        if cls and id:
+            return self.__session.query(cls).filter_by(id=id).first()
+        return None
