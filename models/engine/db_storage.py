@@ -13,8 +13,10 @@ from models.review import Review
 from models.state import State
 from models.user import User
 
-classes = {"Amenity": Amenity, "BaseModel": Base, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
+classes = {
+    "Amenity": Amenity, "BaseModel": Base, "City": City,
+    "Place": Place, "Review": Review, "State": State, "User": User
+}
 
 
 class DBStorage:
@@ -42,10 +44,10 @@ class DBStorage:
         Query on the current database session and return objects.
 
         Args:
-            cls (type, optional): The class of the objects to query. Defaults to None.
+            cls (type, optional): The class of the objects to lts to None.
 
         Returns:
-            dict: A dictionary of queried objects with keys in the format <class name>.<id>.
+            dict: A dictionary of queried obj the format <class name>.<id>.
         """
         if cls:
             objects = self.__session.query(cls).all()
@@ -85,7 +87,8 @@ class DBStorage:
         Reload data from the database and create a new session.
         """
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(
+                 bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
 
@@ -104,7 +107,7 @@ class DBStorage:
             id (str): The ID of the object.
 
         Returns:
-            BaseModel: The object with the specified class and ID, or None if not found.
+            BaseModel: The object with the specified ID, or None if not found.
         """
         if cls and id:
             return self.__session.query(cls).filter_by(id=id).first()

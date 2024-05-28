@@ -32,16 +32,19 @@ class FileStorage:
 
     def all(self, cls=None):
         """
-        Returns the dictionary __objects. If a class is specified, returns objects of that class.
+        Returns the dictionary __objects. , returns objects of that class.
 
         Args:
-            cls (type, optional): The class of the objects to return. Defaults to None.
+            cls (type, optional): The class of the objects to return. Defaults.
 
         Returns:
-            dict: A dictionary of all objects, or objects of a specific class if cls is provided.
+            dict: A dictionary of all objects, or objects of a speif cls
         """
         if cls is not None:
-            new_dict = {key: value for key, value in self.__objects.items() if isinstance(value, cls) or value.__class__.__name__ == cls}
+            new_dict = {
+                key: value for key, value in self.__objects.items()
+                if isinstance(value, cls) or value.__class__.__name__ == cls
+            }
             return new_dict
         return self.__objects
 
@@ -60,7 +63,9 @@ class FileStorage:
         """
         Serializes __objects to the JSON file (path: __file_path).
         """
-        json_objects = {key: obj.to_dict() for key, obj in self.__objects.items()}
+        json_objects = {
+            key: obj.to_dict() for key, obj in self.__objects.items()
+        }
         with open(self.__file_path, 'w') as f:
             json.dump(json_objects, f)
 
@@ -103,7 +108,7 @@ class FileStorage:
             id (str): The ID of the object.
 
         Returns:
-            BaseModel: The object with the specified class and ID, or None if not found.
+            BaseModel: The object with the specified class and ID, or None
         """
         if cls and id:
             key = "{}.{}".format(cls.__name__, id)
@@ -112,14 +117,15 @@ class FileStorage:
 
     def count(self, cls=None):
         """
-        Count the number of objects in storage. If a class is specified, counts objects of that class.
+        Count the number of objects in storage. Iunts objects of that class.
 
         Args:
-            cls (type, optional): The class of the objects to count. Defaults to None.
+            cls (type, optional): The class of the objects to countto None.
 
         Returns:
-            int: The number of objects in storage, or the number of objects of a specific class if cls is provided.
+            int: The number of objects of a specific class if cls is provided.
         """
         if cls:
-            return len([obj for obj in self.__objects.values() if isinstance(obj, cls)])
+            return len([obj for obj in self.__objects.values()
+                       if isinstance(obj, cls)])
         return len(self.__objects)
